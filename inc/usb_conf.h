@@ -48,7 +48,13 @@
  #include "stm3210c_eval_ioe.h"
  #include "stm3210c_eval_spi_sd.h"
 #else
- #error "Missing define: Evaluation board (ie. USE_STM322xG_EVAL)"
+// #error "Missing define: Evaluation board (ie. USE_STM322xG_EVAL)"
+ #include "stm32f4xx.h"
+ #include "stm32f4xx_rcc.h"
+ #include "stm32f4xx_gpio.h"
+ #include "misc.h"
+ #define USE_DEVICE_MODE
+ #define USE_USB_OTG_FS
 #endif
 
 
@@ -200,6 +206,9 @@
 //#define USE_HOST_MODE
 #define USE_DEVICE_MODE
 //#define USE_OTG_MODE
+
+#define USB_OTG_FS_CORE
+#define USE_USB_OTG_FS
 
 #ifndef USB_OTG_FS_CORE
  #ifndef USB_OTG_HS_CORE

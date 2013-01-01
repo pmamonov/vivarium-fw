@@ -42,12 +42,14 @@
  #include "stm3210c_eval.h"
  #include "stm3210c_eval_ioe.h"
 #else
- #error "Missing define: Evaluation board (ie. USE_STM322xG_EVAL)"
+// #error "Missing define: Evaluation board (ie. USE_STM322xG_EVAL)"
+	#include "stm32f4xx.h"
+	#include "stm32f4xx_exti.h"
 #endif
 
 #include "usbd_cdc_core.h"
 
-#include "lcd_log.h"
+//#include "lcd_log.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -163,9 +165,9 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* Information panel */
-  LCD_SetTextColor(Green);
+//  LCD_SetTextColor(Green);
   //LCD_DisplayStringLine( LCD_PIXEL_HEIGHT - 42, USER_INFORMATION[x]);  
-  LCD_SetTextColor(LCD_LOG_DEFAULT_COLOR);
+//  LCD_SetTextColor(LCD_LOG_DEFAULT_COLOR);
 }
 
 /**

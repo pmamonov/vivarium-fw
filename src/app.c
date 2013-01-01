@@ -127,10 +127,10 @@ int main(void)
   {
     if (i++ == 0x100000)
     {
-      STM_EVAL_LEDToggle(LED1);
+/*      STM_EVAL_LEDToggle(LED1);
       STM_EVAL_LEDToggle(LED2);
       STM_EVAL_LEDToggle(LED3);
-      STM_EVAL_LEDToggle(LED4);
+      STM_EVAL_LEDToggle(LED4);*/
       i = 0;
     }
   }

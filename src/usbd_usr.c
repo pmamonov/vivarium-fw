@@ -28,7 +28,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_usr.h"
 #include "usbd_ioreq.h"
-#include "lcd_log.h"
+//#include "lcd_log.h"
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
 * @{
@@ -115,31 +115,6 @@ USBD_Usr_cb_TypeDef USR_cb =
 void USBD_USR_Init(void)
 {  
   /* Initialize LEDs */
-  STM_EVAL_LEDInit(LED1);
-  STM_EVAL_LEDInit(LED2);
-  STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED4);   
-  
-  /* Initialize the LCD */
-#if defined (USE_STM322xG_EVAL)
-  STM322xG_LCD_Init();
-#elif defined(USE_STM324xG_EVAL)
-  STM324xG_LCD_Init();
-#elif defined (USE_STM3210C_EVAL)
-  STM3210C_LCD_Init();
-#else
- #error "Missing define: Evaluation board (ie. USE_STM322xG_EVAL)"
-#endif
-
-  LCD_LOG_Init();
-  
-#ifdef USE_USB_OTG_HS 
-  LCD_LOG_SetHeader(" USB OTG HS VCP Device");
-#else
-  LCD_LOG_SetHeader(" USB OTG FS VCP Device");
-#endif
-  LCD_UsrLog("> USB device library started.\n"); 
-  LCD_LOG_SetFooter ("     USB Device Library v1.1.0" );
 }
 
 /**
@@ -153,14 +128,15 @@ void USBD_USR_DeviceReset(uint8_t speed )
  switch (speed)
  {
    case USB_OTG_SPEED_HIGH: 
-     LCD_LOG_SetFooter ("     USB Device Library v1.1.0 [HS]" );
+//     LCD_LOG_SetFooter ("     USB Device Library v1.1.0 [HS]" );
      break;
 
   case USB_OTG_SPEED_FULL: 
-     LCD_LOG_SetFooter ("     USB Device Library v1.1.0 [FS]" );
+//     LCD_LOG_SetFooter ("     USB Device Library v1.1.0 [FS]" );
      break;
  default:
-     LCD_LOG_SetFooter ("     USB Device Library v1.1.0 [??]" );
+//     LCD_LOG_SetFooter ("     USB Device Library v1.1.0 [??]" );
+		break;
  }
 }
 
@@ -173,7 +149,7 @@ void USBD_USR_DeviceReset(uint8_t speed )
 */
 void USBD_USR_DeviceConfigured (void)
 {
-  LCD_UsrLog("> VCP Interface configured.\n");
+//  LCD_UsrLog("> VCP Interface configured.\n");
 }
 
 /**
@@ -184,7 +160,7 @@ void USBD_USR_DeviceConfigured (void)
 */
 void USBD_USR_DeviceSuspended(void)
 {
-  LCD_UsrLog("> USB Device in Suspend Mode.\n");
+//  LCD_UsrLog("> USB Device in Suspend Mode.\n");
   /* Users can do their application actions here for the USB-Reset */
 }
 
@@ -197,7 +173,7 @@ void USBD_USR_DeviceSuspended(void)
 */
 void USBD_USR_DeviceResumed(void)
 {
-    LCD_UsrLog("> USB Device in Idle Mode.\n");
+//    LCD_UsrLog("> USB Device in Idle Mode.\n");
   /* Users can do their application actions here for the USB-Reset */
 }
 
@@ -210,7 +186,7 @@ void USBD_USR_DeviceResumed(void)
 */
 void USBD_USR_DeviceConnected (void)
 {
-  LCD_UsrLog("> USB Device Connected.\n");
+//  LCD_UsrLog("> USB Device Connected.\n");
 }
 
 
@@ -222,7 +198,7 @@ void USBD_USR_DeviceConnected (void)
 */
 void USBD_USR_DeviceDisconnected (void)
 {
-  LCD_UsrLog("> USB Device Disconnected.\n");
+//  LCD_UsrLog("> USB Device Disconnected.\n");
 }
 /**
 * @}
