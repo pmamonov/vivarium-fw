@@ -33,76 +33,15 @@
 #include "usbd_desc.h"
 #include <stdio.h>
 //#include "newlib_stubs.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
-/** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
-  * @{
-  */
+void vReadTask(void* vpars);
+void vWriteTask(void* vpars);
 
-
-/** @defgroup APP_VCP 
-  * @brief Mass storage application module
-  * @{
-  */ 
-
-/** @defgroup APP_VCP_Private_TypesDefinitions
-  * @{
-  */ 
-/**
-  * @}
-  */ 
-
-
-/** @defgroup APP_VCP_Private_Defines
-  * @{
-  */ 
-
-/**
-  * @}
-  */ 
-
-
-/** @defgroup APP_VCP_Private_Macros
-  * @{
-  */ 
-/**
-  * @}
-  */ 
-
-
-/** @defgroup APP_VCP_Private_Variables
-  * @{
-  */ 
-  
-#ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
-  #if defined ( __ICCARM__ ) /*!< IAR Compiler */
-    #pragma data_alignment=4   
-  #endif
-#endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
-   
 __ALIGN_BEGIN USB_OTG_CORE_HANDLE    USB_OTG_dev __ALIGN_END ;
 
-/**
-  * @}
-  */ 
 
-
-/** @defgroup APP_VCP_Private_FunctionPrototypes
-  * @{
-  */ 
-/**
-  * @}
-  */ 
-
-
-/** @defgroup APP_VCP_Private_Functions
-  * @{
-  */ 
-
-/**
-  * @brief  Program entry point
-  * @param  None
-  * @retval None
-  */
 int main(void)
 {
   __IO uint32_t i = 0;  
@@ -130,15 +69,43 @@ int main(void)
     setvbuf(stderr, NULL, _IONBF, 0);
 
   /* Main loop */
-	uint8_t b[100];
-  while (1)
+  iprintf("Creating tasks\n");
+  xTaskCreate( vReadTask, "echo", 1024, NULL, tskIDLE_PRIORITY+1, NULL );
+  xTaskCreate( vWriteTask, "echo", 1024, NULL, tskIDLE_PRIORITY+1, NULL );
+  iprintf("Ready\n");
+  vTaskStartScheduler();
+/*  while (1)
   {
 		iprintf("> %s", fgets(b, 100, stdin));
 		fflush(stdout);
-/*		_read(STDIN_FILENO, b, 1);
-		_write(STDOUT_FILENO, b, 1);*/
-  }
+  }*/
 } 
+
+volatile uint8_t echo_buff[100];
+volatile buff_ready=0;
+
+void vReadTask(void* vpars){
+  iprintf("Reader is here\n");
+  while (1)
+  {
+    if (!buff_ready){
+      fgets(echo_buff, 100, stdin);
+      buff_ready=1;
+    }
+  }
+}
+
+void vWriteTask(void* vpars){
+  iprintf("Writer is here\n");
+  while (1)
+  {
+    if (buff_ready){
+		  iprintf(">> %s", echo_buff);
+		  fflush(stdout);
+      buff_ready=0;
+    }
+  }
+}
 
 #ifdef USE_FULL_ASSERT
 /**
@@ -160,18 +127,3 @@ void assert_failed(uint8_t* file, uint32_t line)
 }
 #endif
 
-/**
-  * @}
-  */ 
-
-
-/**
-  * @}
-  */ 
-
-
-/**
-  * @}
-  */ 
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

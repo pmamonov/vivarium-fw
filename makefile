@@ -15,7 +15,10 @@ CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Os -g\
  -ISTM32_USB_OTG_Driver/inc\
  -ISTM32_USB_Device_Library/Core/inc\
  -ISTM32_USB_Device_Library/Class/cdc/inc\
- -DUSE_STDPERIPH_DRIVER
+ -DUSE_STDPERIPH_DRIVER\
+ -IFreeRTOS/Source/include\
+ -IFreeRTOS/Source/portable/GCC/ARM_CM4F
+
 
 OBJ = src/startup_stm32f4xx.o\
   src/stm32fxxx_it.o\
@@ -26,6 +29,11 @@ OBJ = src/startup_stm32f4xx.o\
   src/usbd_desc.o\
   src/usbd_usr.o\
   src/newlib_stubs.o\
+  FreeRTOS/Source/tasks.o\
+  FreeRTOS/Source/queue.o\
+  FreeRTOS/Source/list.o\
+  FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o\
+  FreeRTOS/Source/portable/MemMang/heap_3.o\
   STM32_USB_Device_Library/Class/cdc/src/usbd_cdc_core.o\
   STM32_USB_Device_Library/Core/src/usbd_ioreq.o\
   STM32_USB_Device_Library/Core/src/usbd_req.o\

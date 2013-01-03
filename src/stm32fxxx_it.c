@@ -135,9 +135,9 @@ void UsageFault_Handler(void)
   * @param  None
   * @retval None
   */
-void SVC_Handler(void)
+/*void SVC_Handler(void)
 {
-}
+}*/
 
 /**
   * @brief  This function handles Debug Monitor exception.
@@ -153,22 +153,18 @@ void DebugMon_Handler(void)
   * @param  None
   * @retval None
   */
-void PendSV_Handler(void)
+/*void PendSV_Handler(void)
 {
-}
+}*/
 
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
   * @retval None
   */
-void SysTick_Handler(void)
+/*void SysTick_Handler(void)
 {
-  /* Information panel */
-//  LCD_SetTextColor(Green);
-  //LCD_DisplayStringLine( LCD_PIXEL_HEIGHT - 42, USER_INFORMATION[x]);  
-//  LCD_SetTextColor(LCD_LOG_DEFAULT_COLOR);
-}
+}*/
 
 /**
   * @brief  This function handles EXTI15_10_IRQ Handler.

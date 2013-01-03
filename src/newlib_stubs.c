@@ -16,17 +16,17 @@ extern int errno;
  A pointer to a list of environment variables and their values. 
  For a minimal environment, this empty list is adequate:
  */
-/*char *__env[1] = { 0 };
-char **environ = __env;*/
+char *__env[1] = { 0 };
+char **environ = __env;
 
 int _write(int file, char *ptr, int len);
 
-/*void _exit(int status) {
+void _exit(int status) {
     _write(1, "exit", 4);
     while (1) {
         ;
     }
-}*/
+}
 
 int _close(int file) {
     return -1;
@@ -64,9 +64,9 @@ int _fstat(int file, struct stat *st) {
  Process-ID; this is sometimes used to generate strings unlikely to conflict with other processes. Minimal implementation, for a system without processes:
  */
 
-/*int _getpid() {
+int _getpid() {
     return 1;
-}*/
+}
 
 /*
  isatty
@@ -90,10 +90,10 @@ int _isatty(int file) {
  kill
  Send a signal. Minimal implementation:
  */
-/*int _kill(int pid, int sig) {
+int _kill(int pid, int sig) {
     errno = EINVAL;
     return (-1);
-}*/
+}
 
 /*
  link
