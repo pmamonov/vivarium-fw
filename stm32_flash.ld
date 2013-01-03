@@ -29,6 +29,8 @@
 *****************************************************************************
 */
 
+/*GROUP(-lgcc -lc -lcs3 -lcs3unhosted -lcs3arm)*/
+
 /* Entry Point */
 ENTRY(Reset_Handler)
 
@@ -80,11 +82,13 @@ SECTIONS
 
 
    .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
-    .ARM : {
+
     __exidx_start = .;
-      *(.ARM.exidx*)
-      __exidx_end = .;
+    .ARM.exidx : {
+      *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     } >FLASH
+      __exidx_end = .;
+
 
   .preinit_array     :
   {
@@ -160,12 +164,13 @@ SECTIONS
   } >MEMORY_B1
 
   /* Remove information from the standard libraries */
-  /DISCARD/ :
+/*  /DISCARD/ :
   {
     libc.a ( * )
     libm.a ( * )
     libgcc.a ( * )
   }
-
-  .ARM.attributes 0 : { *(.ARM.attributes) }
+*/
+/*  .ARM.attributes 0 : { *(.ARM.attributes) } */
+  .ARM.attributes 0 : { KEEP (*(.ARM.attributes)) }
 }

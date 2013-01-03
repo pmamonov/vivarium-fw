@@ -32,6 +32,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_vcp.h"
 #include "usb_conf.h"
+#include "newlib_stubs.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -61,7 +62,7 @@ extern uint32_t APP_Rx_ptr_in;    /* Increment this pointer or roll it back to
 static uint16_t VCP_Init     (void);
 static uint16_t VCP_DeInit   (void);
 static uint16_t VCP_Ctrl     (uint32_t Cmd, uint8_t* Buf, uint32_t Len);
-static uint16_t VCP_DataTx   (uint8_t* Buf, uint32_t Len);
+//uint16_t VCP_DataTx   (uint8_t* Buf, uint32_t Len);
 static uint16_t VCP_DataRx   (uint8_t* Buf, uint32_t Len);
 
 static uint16_t VCP_COMConfig(uint8_t Conf);
@@ -175,16 +176,9 @@ static uint16_t VCP_Ctrl (uint32_t Cmd, uint8_t* Buf, uint32_t Len)
   * @param  Len: Number of data to be sent (in bytes)
   * @retval Result of the opeartion: USBD_OK if all operations are OK else VCP_FAIL
   */
-static uint16_t VCP_DataTx (uint8_t* Buf, uint32_t Len)
+uint16_t VCP_DataTx (uint8_t* Buf, uint32_t Len)
 {
-  if (linecoding.datatype == 7)
-  {
-//    APP_Rx_Buffer[APP_Rx_ptr_in] = USART_ReceiveData(EVAL_COM1) & 0x7F;
-  }
-  else if (linecoding.datatype == 8)
-  {
-//    APP_Rx_Buffer[APP_Rx_ptr_in] = USART_ReceiveData(EVAL_COM1);
-  }
+  APP_Rx_Buffer[APP_Rx_ptr_in] = Buf[0];
   
   APP_Rx_ptr_in++;
   
@@ -218,8 +212,10 @@ static uint16_t VCP_DataRx (uint8_t* Buf, uint32_t Len)
   
   for (i = 0; i < Len; i++)
   {
-//    USART_SendData(EVAL_COM1, *(Buf + i) );
-//    while(USART_GetFlagStatus(EVAL_COM1, USART_FLAG_TXE) == RESET); 
+		if (stdin_buffer_in>=STDIN_BUFFER_SIZE) stdin_buffer_in=0;
+		stdin_buffer[stdin_buffer_in++] = Buf[i];
+		if (stdin_buffer_len<STDIN_BUFFER_SIZE) stdin_buffer_len++;
+//		VCP_DataTx(&Buf[i], 1); // loopback
   } 
  
   return USBD_OK;

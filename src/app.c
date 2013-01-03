@@ -31,6 +31,8 @@
 #include "usbd_usr.h"
 #include "usb_conf.h"
 #include "usbd_desc.h"
+#include <stdio.h>
+//#include "newlib_stubs.h"
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
   * @{
@@ -121,18 +123,20 @@ int main(void)
             &USR_desc, 
             &USBD_CDC_cb, 
             &USR_cb);
-  
+
+// disable stdio buffering
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+
   /* Main loop */
+	uint8_t b[100];
   while (1)
   {
-    if (i++ == 0x100000)
-    {
-/*      STM_EVAL_LEDToggle(LED1);
-      STM_EVAL_LEDToggle(LED2);
-      STM_EVAL_LEDToggle(LED3);
-      STM_EVAL_LEDToggle(LED4);*/
-      i = 0;
-    }
+		iprintf("> %s", fgets(b, 100, stdin));
+		fflush(stdout);
+/*		_read(STDIN_FILENO, b, 1);
+		_write(STDOUT_FILENO, b, 1);*/
   }
 } 
 

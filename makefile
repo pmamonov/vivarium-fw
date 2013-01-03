@@ -1,12 +1,13 @@
 PREFIX=arm-none-eabi
 AS      = $(PREFIX)-as
 CC      = $(PREFIX)-gcc
+CXX      = $(PREFIX)-g++
 LD      = $(PREFIX)-ld
 OBJCOPY = $(PREFIX)-objcopy
 
 LDSCRIPT = stm32_flash.ld
 
-CFLAGS = -mcpu=cortex-m3 -mthumb -Os -g\
+CFLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=softfp -Os -g\
  -I./inc\
  -ICMSIS/Device/ST/STM32F4xx/Include\
  -ICMSIS/Include\
@@ -24,6 +25,7 @@ OBJ = src/startup_stm32f4xx.o\
   src/usbd_cdc_vcp.o\
   src/usbd_desc.o\
   src/usbd_usr.o\
+  src/newlib_stubs.o\
   STM32_USB_Device_Library/Class/cdc/src/usbd_cdc_core.o\
   STM32_USB_Device_Library/Core/src/usbd_ioreq.o\
   STM32_USB_Device_Library/Core/src/usbd_req.o\
@@ -44,7 +46,7 @@ main.bin: main.elf
 	$(PREFIX)-size $<
 
 main.elf: $(OBJ)
-	$(CC) -o $@ -nostartfiles -Wl,-T$(LDSCRIPT) $^
+	$(CXX) $(CFLAGS) -o $@ -Wl,-T$(LDSCRIPT) -Wl,-Map=linker.map -Wl,-cref -Wl,--gc-sections $^
 
 clean:
 	rm -f $(OBJ) *.elf *.bin
