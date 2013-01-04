@@ -36,6 +36,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "stm32f4xx_gpio.h"
+
 void vReadTask(void* vpars);
 void vWriteTask(void* vpars);
 
@@ -46,13 +48,14 @@ int main(void)
 {
   __IO uint32_t i = 0;  
 
-  /*!< At this stage the microcontroller clock setting is already configured, 
-  this is done through SystemInit() function which is called from startup
-  file (startup_stm32fxxx_xx.s) before to branch to application main.
-  To reconfigure the default setting of SystemInit() function, refer to
-  system_stm32fxxx.c file
-  */  
- 
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+  GPIO_InitTypeDef sGPIOinit;
+  sGPIOinit.GPIO_Pin = 1<<15;
+  sGPIOinit.GPIO_Mode = GPIO_Mode_OUT;
+  sGPIOinit.GPIO_Speed = GPIO_Speed_25MHz;
+  sGPIOinit.GPIO_OType = GPIO_OType_PP;
+  GPIO_Init(GPIOD, &sGPIOinit);
+
   USBD_Init(&USB_OTG_dev,
 #ifdef USE_USB_OTG_HS 
             USB_OTG_HS_CORE_ID,
@@ -90,6 +93,7 @@ void vReadTask(void* vpars){
   {
     if (!buff_ready){
       fgets(echo_buff, 100, stdin);
+      GPIO_SetBits(GPIOD, 1<<15);
       buff_ready=1;
     }
   }
@@ -103,6 +107,7 @@ void vWriteTask(void* vpars){
 		  iprintf(">> %s", echo_buff);
 		  fflush(stdout);
       buff_ready=0;
+      GPIO_ResetBits(GPIOD, 1<<15);
     }
   }
 }
