@@ -62,7 +62,7 @@ extern uint32_t APP_Rx_ptr_in;    /* Increment this pointer or roll it back to
 static uint16_t VCP_Init     (void);
 static uint16_t VCP_DeInit   (void);
 static uint16_t VCP_Ctrl     (uint32_t Cmd, uint8_t* Buf, uint32_t Len);
-//uint16_t VCP_DataTx   (uint8_t* Buf, uint32_t Len);
+//static uint16_t VCP_DataTx   (uint8_t* Buf, uint32_t Len);
 static uint16_t VCP_DataRx   (uint8_t* Buf, uint32_t Len);
 
 static uint16_t VCP_COMConfig(uint8_t Conf);
@@ -210,12 +210,17 @@ static uint16_t VCP_DataRx (uint8_t* Buf, uint32_t Len)
 {
   uint32_t i;
   
-  for (i = 0; i < Len; i++)
+  for (i = 0; i < Len && stdin_buffer_len < STDIN_BUFFER_SIZE; i++)
   {
-		if (stdin_buffer_in>=STDIN_BUFFER_SIZE) stdin_buffer_in=0;
 		stdin_buffer[stdin_buffer_in++] = Buf[i];
-		if (stdin_buffer_len<STDIN_BUFFER_SIZE) stdin_buffer_len++;
-//		VCP_DataTx(&Buf[i], 1); // loopback
+    stdin_buffer_len++;
+		if (stdin_buffer_in==STDIN_BUFFER_SIZE) stdin_buffer_in=0;
+/*    if (stdin_buffer_in == stdin_buffer_out){
+      stdin_buffer_out = stdin_buffer_out < STDIN_BUFFER_SIZE-1 ? stdin_buffer_out+1 : 0;
+    }
+    else{
+      stdin_buffer_len++;
+    }*/
   } 
  
   return USBD_OK;

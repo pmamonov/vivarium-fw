@@ -156,19 +156,18 @@ int _read(int file, char *ptr, int len) {
     int num = 0;
     switch (file) {
     case STDIN_FILENO:
+				while (stdin_buffer_len < len);
         for (n = 0; n < len; n++) {
-						while (!stdin_buffer_len);
-						if (stdin_buffer_out >= STDIN_BUFFER_SIZE) stdin_buffer_out=0;
             *ptr++ = stdin_buffer[stdin_buffer_out++];
+						if (stdin_buffer_out >= STDIN_BUFFER_SIZE) stdin_buffer_out=0;
 						stdin_buffer_len--;
-            num++;
         }
         break;
     default:
         errno = EBADF;
         return -1;
     }
-    return num;
+    return len;
 }
 
 /*

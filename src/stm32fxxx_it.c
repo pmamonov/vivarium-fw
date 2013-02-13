@@ -50,7 +50,8 @@
 #include "usbd_cdc_core.h"
 
 //#include "lcd_log.h"
-
+#include "stm32f4xx_adc.h"
+//#include "app.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -237,7 +238,11 @@ void OTG_HS_EP1_OUT_IRQHandler(void)
   USBD_OTG_EP1OUT_ISR_Handler (&USB_OTG_dev);
 }
 #endif
-
+/*
+void ADC_IRQHandler(void){
+  chan[ichan++] = ADC_GetConversionValue(ADC1);
+  ADC_ClearITPendingBit(ADC1, ADC_IT_EOC);
+}*/
 
 /******************************************************************************/
 /*                 STM32Fxxx Peripherals Interrupt Handlers                   */

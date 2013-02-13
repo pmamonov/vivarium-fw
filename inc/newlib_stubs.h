@@ -15,6 +15,7 @@ volatile uint16_t stdin_buffer_out=0;
 extern volatile uint8_t stdin_buffer[];
 extern volatile uint16_t stdin_buffer_in;
 extern volatile uint16_t stdin_buffer_len;
+extern volatile uint16_t stdin_buffer_out;
 #endif
 
 uint16_t VCP_DataTx (uint8_t* Buf, uint32_t Len);
