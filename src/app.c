@@ -10,6 +10,7 @@
 //#include "newlib_stubs.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_adc.h"
@@ -23,6 +24,7 @@ __ALIGN_BEGIN USB_OTG_CORE_HANDLE    USB_OTG_dev __ALIGN_END ;
 
 #define ADC_NCHAN 4
 volatile int chan[ADC_NCHAN];
+xSemaphoreHandle chanLock;
 
 int main(void)
 {
@@ -88,12 +90,22 @@ int main(void)
   setvbuf(stdout, NULL, _IONBF, 0);
   setvbuf(stderr, NULL, _IONBF, 0);
 
+  chanLock = xSemaphoreCreateMutex();
+  if (chanLock == NULL) {
+    iprintf("ERROR: Failed to create mutex.");
+    while(1);
+  }
   xTaskCreate( vChatTask, "chat", 1024, NULL, tskIDLE_PRIORITY+1, NULL );
   xTaskCreate( vADCTask, "adc", 1024, NULL, tskIDLE_PRIORITY+1, NULL );
   vTaskStartScheduler();
 } 
 
 volatile buff_ready=0;
+
+void blink(){
+  if (GPIO_ReadOutputDataBit(GPIOD, 1<<15)) GPIO_ResetBits(GPIOD, 1<<15);
+  else GPIO_SetBits(GPIOD, 1<<15);
+};
 
 void vChatTask(void* vpars){
 #define CMDBUFLEN 100
@@ -103,13 +115,14 @@ void vChatTask(void* vpars){
   while (1)
   {
       fgets(cmdbuf, CMDBUFLEN, stdin);
-      if (GPIO_ReadOutputDataBit(GPIOD, 1<<15)) GPIO_ResetBits(GPIOD, 1<<15);
-      else GPIO_SetBits(GPIOD, 1<<15);
       tk = strtok(cmdbuf, " \n");
       if (strcmp(tk, "get")==0){
+        xSemaphoreTake(chanLock, portMAX_DELAY);
+        blink();
         for (i=0; i<ADC_NCHAN; i++)
           iprintf(" %d", chan[i]);
         iprintf("\n");
+        xSemaphoreGive(chanLock);
       }
 //      else if(strcmp(tk, "cmd2")==0){
 //        iprintf("rpl2\n");
@@ -123,14 +136,17 @@ void vChatTask(void* vpars){
 void vADCTask(void* vpars){
   int i;
   while (1){
+    xSemaphoreTake(chanLock, portMAX_DELAY);
     for (i=0; i<ADC_NCHAN; i++){
       ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-      ADC_RegularChannelConfig(ADC1, (uint8_t)i, 1, ADC_SampleTime_3Cycles);
+      ADC_RegularChannelConfig(ADC1, (uint8_t)i, 1, ADC_SampleTime_144Cycles);
 // switch external MUX
+//      vTaskDelay(5);
       ADC_SoftwareStartConv(ADC1);
       while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
       chan[i] = ADC_GetConversionValue(ADC1);
     }
+    xSemaphoreGive(chanLock);
     vTaskDelay(100);
   }
 }
