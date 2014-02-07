@@ -6,19 +6,31 @@ libc = ctypes.cdll.LoadLibrary("libc.so.6")
 mask = '\x00' * 17 # 16 byte empty mask + null terminator 
 libc.sigprocmask(2, mask, None)
 
+timestamp = lambda: time.strftime("%Y-%m-%d_%H:%M:%S")
+
 def connect(dev = None, ntry=-1):
-  if dev == None:
-    while 1:
-      dev = dev_find()
-      if dev: break
-      else:
-        print "Device not found"
-        time.sleep(1)
+  status_ok = 0
+  while 1:
+    try:
       if ntry > 0: ntry-=1
-      if ntry ==0: raise NameError, "Device not found"
-  sr = serial.Serial(port=dev, timeout=0.5, baudrate=115200)
-  while len(sr.read(1))>0: pass
-  return sr
+      if not dev: dev=dev_find()
+      if dev:
+        sr = serial.Serial(port=dev, timeout=0.5, baudrate=115200)
+        status_ok = 1
+        break
+      else:
+        print("Device not found")
+        time.sleep(1)
+      if ntry == 0: break
+    except:
+      dev = None
+      print(sys.exc_info()[1])
+#  while len(sr.read(1))>0: pass
+  if status_ok:
+    return sr
+  else:
+    raise NameError, "Device not found"
+
  
 def dev_find():
   d = glob.glob(dev_pat)
@@ -48,7 +60,7 @@ prs.add_argument('-l', dest="log", metavar='FILE', type=str, help='log file',def
 args = prs.parse_args()
 
 def bye(sig,fr):
-  print "%s Logger stopped"%time.strftime("%Y-%m-%d_%H:%M:%S")
+  print("%s Logger stopped"%timestamp())
   sys.exit(0)
 
 
@@ -85,21 +97,25 @@ sr = connect(args.dev, ntry=1)
 #sr = FakeSerial()
 
 
+
 tstart=time.time()
-print "%s Logger started"%time.strftime("%Y-%m-%d_%H:%M:%S")
+print("%s Logger started"%timestamp())
 while True:
   try:
     sr.flushInput()
     sr.write("get\n")
     s = sr.readline()
   except (serial.serialutil.SerialException, serial.termios.error) as err:
-    print "%s Error communicating to device: %s"%(time.strftime("%Y-%m-%d_%H:%M:%S"),str(err))
+    print("%s Error communicating to device: %s"%(timestamp,str(err)))
     sr.close()
     time.sleep(1)
 #      sys.stdout.flush()
     sr = connect() #serial.Serial(port=dev_find(), timeout=0.5)
 #    while len(sr.read(1))>0: pass
-    print "%s Reconnected to device"%time.strftime("%Y-%m-%d_%H:%M:%S")
+    print("%s Reconnected to device"%timestamp())
+  if len(s.split()) == 0:
+    print("%s Device reply not understood '%s'"%(timestamp(),s))
+    continue
   out.write("%.2f"%(time.time()-tstart))
   out.write(reduce(lambda a,b: a+b, map(lambda v: " %s"%v, s.split()))+"\n")
   out.flush()
