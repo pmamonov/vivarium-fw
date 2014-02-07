@@ -1,4 +1,4 @@
-PREFIX=../arm-2012.09/bin/arm-none-eabi
+PREFIX=arm-none-eabi
 AS      = $(PREFIX)-as
 CC      = $(PREFIX)-gcc
 CXX      = $(PREFIX)-g++

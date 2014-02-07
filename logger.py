@@ -98,6 +98,7 @@ sr = connect(args.dev, ntry=1)
 
 
 
+nchan = 0
 tstart=time.time()
 print("%s Logger started"%timestamp())
 while True:
@@ -113,8 +114,11 @@ while True:
     sr = connect() #serial.Serial(port=dev_find(), timeout=0.5)
 #    while len(sr.read(1))>0: pass
     print("%s Reconnected to device"%timestamp())
-  if len(s.split()) == 0:
-    print("%s Device reply not understood '%s'"%(timestamp(),s))
+  if nchan == 0:
+    nchan = len(s.split())
+    print("%s Number of channels: %d"%(timestamp(),nchan))
+  if len(s.split()) != nchan:
+    print("%s Corrupted reply string '%s'"%(timestamp(),s))
     continue
   out.write("%.2f"%(time.time()-tstart))
   out.write(reduce(lambda a,b: a+b, map(lambda v: " %s"%v, s.split()))+"\n")
