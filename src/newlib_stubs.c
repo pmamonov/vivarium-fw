@@ -19,18 +19,18 @@ extern int errno;
 char *__env[1] = { 0 };
 char **environ = __env;
 
-int _write(int file, char *ptr, int len);
+//int _write(int file, char *ptr, int len);
 
 void _exit(int status) {
-    _write(1, "exit", 4);
+//    _write(1, "exit", 4);
     while (1) {
         ;
     }
 }
-
+/*
 int _close(int file) {
     return -1;
-}
+}*/
 /*
  execve
  Transfer control to a new process. Minimal implementation (for a system without processes):
@@ -54,10 +54,10 @@ int _close(int file) {
  all files are regarded as character special devices.
  The `sys/stat.h' header file required is distributed in the `include' subdirectory for this C library.
  */
-int _fstat(int file, struct stat *st) {
+/*int _fstat(int file, struct stat *st) {
     st->st_mode = S_IFCHR;
     return 0;
-}
+}*/
 
 /*
  getpid
@@ -72,7 +72,7 @@ int _getpid() {
  isatty
  Query whether output stream is a terminal. For consistency with the other minimal implementations,
  */
-int _isatty(int file) {
+/*int _isatty(int file) {
     switch (file){
     case STDOUT_FILENO:
     case STDERR_FILENO:
@@ -83,7 +83,7 @@ int _isatty(int file) {
         errno = EBADF;
         return 0;
     }
-}
+}*/
 
 
 /*
@@ -109,9 +109,9 @@ int _kill(int pid, int sig) {
  lseek
  Set position in a file. Minimal implementation:
  */
-int _lseek(int file, int ptr, int dir) {
+/*int _lseek(int file, int ptr, int dir) {
     return 0;
-}
+}*/
 
 /*
  sbrk
@@ -133,7 +133,7 @@ caddr_t _sbrk(int incr) {
 char * stack = (char*) __get_MSP();
      if (heap_end + incr >  stack)
      {
-         _write (STDERR_FILENO, "Heap and stack collision\n", 25);
+//         _write (STDERR_FILENO, "Heap and stack collision\n", 25);
          errno = ENOMEM;
          return  (caddr_t) -1;
          //abort ();
@@ -151,24 +151,25 @@ char * stack = (char*) __get_MSP();
  */
 
 
-int _read(int file, char *ptr, int len) {
+/*int _read(int file, char *ptr, int len) {
     int n;
     int num = 0;
     switch (file) {
     case STDIN_FILENO:
-				while (stdin_buffer_len < len);
         for (n = 0; n < len; n++) {
-            *ptr++ = stdin_buffer[stdin_buffer_out++];
+						while (!stdin_buffer_len);
 						if (stdin_buffer_out >= STDIN_BUFFER_SIZE) stdin_buffer_out=0;
+            *ptr++ = stdin_buffer[stdin_buffer_out++];
 						stdin_buffer_len--;
+            num++;
         }
         break;
     default:
         errno = EBADF;
         return -1;
     }
-    return len;
-}
+    return num;
+}*/
 
 /*
  stat
@@ -213,13 +214,20 @@ int _read(int file, char *ptr, int len) {
  Write a character to a file. `libc' subroutines will use this system routine for output to all files, including stdout
  Returns -1 on error or number of bytes sent
  */
-int _write(int file, char *ptr, int len) {
+/*int _write(int file, char *ptr, int len) {
     int n;
     switch (file) {
-    case STDOUT_FILENO: /*stdout*/
-    case STDERR_FILENO: /* stderr */
+    case STDOUT_FILENO:
+    case STDERR_FILENO:
         for (n = 0; n < len; n++) {
-            VCP_DataTx(ptr++, 1);
+            stdout_buffer[stdout_buffer_in++] = *ptr++;
+            if (stdout_buffer_in == STDOUT_BUFFER_SIZE) stdout_buffer_in = 0;
+            if (stdout_buffer_in == stdout_buffer_out){
+              stdout_buffer_out = (stdout_buffer_out == STDOUT_BUFFER_SIZE-1) ? 0 : stdout_buffer_out+1;
+            }
+            else{
+              stdout_buffer_len++;
+            }
         }
         break;
     default:
@@ -227,4 +235,4 @@ int _write(int file, char *ptr, int len) {
         return -1;
     }
     return len;
-}
+}*/
