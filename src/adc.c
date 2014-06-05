@@ -44,3 +44,22 @@ void adc_init(void){
 void adc_get(int i){
   return 0;
 }
+
+void vADCTask(void* vpars){
+  int i;
+  while (1){
+/*    xSemaphoreTake(chanLock, portMAX_DELAY);
+    for (i=0; i<ADC_NCHAN; i++){
+      ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+      ADC_RegularChannelConfig(ADC1, (uint8_t)i, 1, ADC_SampleTime_144Cycles);
+// switch external MUX
+//      vTaskDelay(5);
+      ADC_SoftwareStartConv(ADC1);
+      while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+      chan[i] = ADC_GetConversionValue(ADC1);
+    }
+    xSemaphoreGive(chanLock);*/
+    vTaskDelay(100);
+  }
+}
+
