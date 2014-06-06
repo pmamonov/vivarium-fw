@@ -3,26 +3,18 @@
 #include "usb_desc.h"
 #include "usb_pwr.h"
 #include "stm32f10x_gpio.h"
-//#include "stdlib.h"
+#include "stdlib.h"
 //#include "string.h"
 #include "cdcio.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "semphr.h"
+//#include "semphr.h"
 
 #include "strtok.h"
 #include "blink.h"
 #include "adc.h"
 #include "chat.h"
 
-/*#define ADC_NCHAN 4
-volatile int chan[ADC_NCHAN];
-xSemaphoreHandle chanLock;*/
-
-void vChatTask(void* vpars);
-void vBlinkTask(void* vpars);
-void status_err();
-void status_ok();
 
 int main(void){
   portBASE_TYPE err;
@@ -39,20 +31,28 @@ int main(void){
 
   err = xTaskCreate( vBlinkTask, "blink", 64, NULL, tskIDLE_PRIORITY+1, NULL );
   if ( err == pdPASS)
-    cdc_write_buf(&cdc_out, "blink started\n", 0);
+    cdc_write_buf(&cdc_out, "blink started\n", 0,1);
   else{
     sniprintf(s, sizeof(s),"blink failed %d", err);
-    cdc_write_buf(&cdc_out, s, 0);
+    cdc_write_buf(&cdc_out, s, 0,1);
   }
-/*
-  err = xTaskCreate( vChatTask, "chat", 1024, NULL, tskIDLE_PRIORITY+1, NULL );
+
+  err = xTaskCreate( vADCTask, "adc", 512, NULL, tskIDLE_PRIORITY+1, NULL );
   if (err == pdPASS)
-    cdc_write_buf(&cdc_out, "chat started\n", 0);
+    cdc_write_buf(&cdc_out, "adc started\n", 0,1);
+  else{
+    sniprintf(s, sizeof(s),"adc failed %d", err);
+    cdc_write_buf(&cdc_out, s, 0,1);
+  }
+
+  err = xTaskCreate( vChatTask, "chat", 512, NULL, tskIDLE_PRIORITY+1, NULL );
+  if (err == pdPASS)
+    cdc_write_buf(&cdc_out, "chat started\n", 0,1);
   else{
     sniprintf(s, sizeof(s),"chat failed %d", err);
-    cdc_write_buf(&cdc_out, s, 0);
+    cdc_write_buf(&cdc_out, s, 0,1);
   }
-*/
+
   vTaskStartScheduler();
 
   while(1);

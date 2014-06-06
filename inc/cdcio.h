@@ -19,7 +19,7 @@ extern volatile cdc_buf_t cdc_in;
 extern volatile cdc_buf_t cdc_out;
 #endif
 
-uint16_t cdc_write_buf(cdc_buf_t *buf, char *s, uint16_t len);
+uint16_t cdc_write_buf(cdc_buf_t *buf, char *s, uint16_t len, unsigned char block);
 uint16_t cdc_read_buf(cdc_buf_t *buf, char *s, uint16_t len);
 
 uint16_t cdc_gets(char *s, uint16_t len);

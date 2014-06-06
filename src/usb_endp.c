@@ -41,7 +41,7 @@ void EP3_OUT_Callback(void)
   uint16_t USB_Rx_Cnt;
   /* Get the received data buffer and update the counter */
   USB_Rx_Cnt = USB_SIL_Read(EP3_OUT, USB_Rx_Buffer);
-  cdc_write_buf(&cdc_in, USB_Rx_Buffer, USB_Rx_Cnt);
+  cdc_write_buf(&cdc_in, USB_Rx_Buffer, USB_Rx_Cnt, 0);
   SetEPRxValid(ENDP3);
 }
 
