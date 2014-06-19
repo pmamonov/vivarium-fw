@@ -62,11 +62,12 @@ int adc_get(int i){
 }
 
 void adc_switch_mux(int n){
-  int i;
+  volatile int i;
   for (i=0; i<ADC_MUX_NPINS; i++){
     if ((1<<i)&n) GPIO_SetBits(ADC_MUX_GPIO, adc_mux_pins[i]);
     else GPIO_ResetBits(ADC_MUX_GPIO, adc_mux_pins[i]);
   }
+  for (i=100; i; i--);
 }
 
 void vADCTask(void* vpars){
