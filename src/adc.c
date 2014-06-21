@@ -36,9 +36,11 @@ void adc_init(void){
 
   ADC_Init(ADC1,&sADCinit);
 
-  ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_1Cycles5);
+  ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_7Cycles5);
 
   ADC_Cmd(ADC1,ENABLE);
+  ADC_StartCalibration(ADC1);
+  while (ADC_GetCalibrationStatus(ADC1) != SET);
 
  // external multiplexer control pins setup
   RCC_APB2PeriphClockCmd(ADC_MUX_RCC, ENABLE);
@@ -55,7 +57,7 @@ void adc_init(void){
 
 int adc_get(int i){
   ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
-  ADC_RegularChannelConfig(ADC1, i, 1, ADC_SampleTime_1Cycles5);
+  ADC_RegularChannelConfig(ADC1, i, 1, ADC_SampleTime_55Cycles5);
   ADC_SoftwareStartConvCmd(ADC1,ENABLE);
   while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
   return ADC_GetConversionValue(ADC1);
@@ -67,7 +69,7 @@ void adc_switch_mux(int n){
     if ((1<<i)&n) GPIO_SetBits(ADC_MUX_GPIO, adc_mux_pins[i]);
     else GPIO_ResetBits(ADC_MUX_GPIO, adc_mux_pins[i]);
   }
-  for (i=100; i; i--);
+  for (i=500; i; i--);
 }
 
 void vADCTask(void* vpars){
@@ -85,6 +87,7 @@ void vADCTask(void* vpars){
         adc_vals[i*ADC_MUX_NCHAN+j] = adc_get(i)-ref;
       }
     }
+//    for (i=0; i<16; i++) adc_vals[i] = adc_get(i);
     xSemaphoreGive(adc_vals_lock);
     vTaskDelay(100);
   }
