@@ -107,7 +107,7 @@ while True:
     sr.write("get\n")
     s = sr.readline()
   except (serial.serialutil.SerialException, serial.termios.error) as err:
-    print("%s Error communicating to device: %s"%(timestamp,str(err)))
+    print("%s Error communicating to device: %s"%(timestamp(),str(err)))
     sr.close()
     time.sleep(1)
 #      sys.stdout.flush()
