@@ -1,4 +1,5 @@
 #include "chat.h"
+#include "counter.h"
 
 void status_err(){
 //  cdc_write_buf(&cdc_out, "\nERR\n", 5);
@@ -32,7 +33,13 @@ void vChatTask(void *vpars){
 
         xSemaphoreGive(adc_vals_lock);
       }
-      else{
+      else if (strcmp(tk, "cnt")==0) {
+        for (i = 0; i < CNT_NUM; i++) {
+          sniprintf(s,sizeof(s),"%d ", cnt_get(i));
+          cdc_write_buf(&cdc_out, s, strlen(s),1);
+        }
+        cdc_write_buf(&cdc_out, "\n",1,1);
+      } else {
         cdc_write_buf(&cdc_out, "ERROR: unknown command\n", 0,1);
       }
         

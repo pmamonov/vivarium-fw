@@ -11,6 +11,7 @@
 #include "blink.h"
 #include "adc.h"
 #include "chat.h"
+#include "counter.h"
 
 int main(void)
 {
@@ -42,6 +43,15 @@ int main(void)
 		cdc_write_buf(&cdc_out, s, 0, 1);
 	}
 #endif
+	err = xTaskCreate(cnt_task, "counter", 512, NULL,
+			  tskIDLE_PRIORITY + 1, NULL );
+	if (err == pdPASS)
+		cdc_write_buf(&cdc_out, "counter started\n", 0, 1);
+	else{
+		sniprintf(s, sizeof(s),"counter failed %d", err);
+		cdc_write_buf(&cdc_out, s, 0, 1);
+	}
+
 	err = xTaskCreate(vChatTask, "chat", 512, NULL,
 			  tskIDLE_PRIORITY + 1, NULL );
 	if (err == pdPASS)
