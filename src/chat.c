@@ -16,7 +16,7 @@ void vChatTask(void *vpars){
   char cmd[64];
   char *tk;
   int16_t i;
-  while (adc_vals_lock == NULL);
+
   while (1){
     cdc_gets(cmd, sizeof(cmd));
 //    cdc_write_buf(&cdc_out, cmd, strlen(cmd),1);

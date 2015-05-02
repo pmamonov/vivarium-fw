@@ -32,6 +32,7 @@ int main(void)
 		cdc_write_buf(&cdc_out, s, 0,1);
 	}
 
+#if 0
 	err = xTaskCreate(vADCTask, "adc", 512, NULL,
 			  tskIDLE_PRIORITY + 1, NULL);
 	if (err == pdPASS)
@@ -40,7 +41,7 @@ int main(void)
 		sniprintf(s, sizeof(s),"adc failed %d", err);
 		cdc_write_buf(&cdc_out, s, 0, 1);
 	}
-
+#endif
 	err = xTaskCreate(vChatTask, "chat", 512, NULL,
 			  tskIDLE_PRIORITY + 1, NULL );
 	if (err == pdPASS)
