@@ -104,7 +104,7 @@ print("%s Logger started"%timestamp())
 while True:
   try:
     sr.flushInput()
-    sr.write("get\n")
+    sr.write("cnt\n")
     s = sr.readline()
   except (serial.serialutil.SerialException, serial.termios.error) as err:
     print("%s Error communicating to device: %s"%(timestamp(),str(err)))
