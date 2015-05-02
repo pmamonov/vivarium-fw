@@ -74,3 +74,6 @@ clean:
 # GAS emits error when optimization is enabled
 CM3/CoreSupport/core_cm3.o: CM3/CoreSupport/core_cm3.c
 	$(CC) $(CFLAGS) -O0 -c -o $@ $<
+
+load: main.bin
+	openocd -f fwload.openocd
