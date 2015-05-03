@@ -2,7 +2,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-#define CNT_NUM	8
+#define CNT_NUM	9
 
 void cnt_task(void* par);
 

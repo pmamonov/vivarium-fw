@@ -21,6 +21,7 @@ static struct gpio_pin gpios[CNT_NUM] = {
 	{.gpio = GPIOA, .pin = GPIO_Pin_5, .rcc = RCC_APB2Periph_GPIOA},
 	{.gpio = GPIOA, .pin = GPIO_Pin_6, .rcc = RCC_APB2Periph_GPIOA},
 	{.gpio = GPIOA, .pin = GPIO_Pin_7, .rcc = RCC_APB2Periph_GPIOA},
+	{.gpio = GPIOA, .pin = GPIO_Pin_8, .rcc = RCC_APB2Periph_GPIOA},
 };
 
 xSemaphoreHandle gpios_lock = NULL;
