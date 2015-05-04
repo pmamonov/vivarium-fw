@@ -21,6 +21,14 @@ static struct gpio_pin gpios[CNT_NUM] = {
 	{.gpio = GPIOA, .pin = GPIO_Pin_5, .rcc = RCC_APB2Periph_GPIOA},
 	{.gpio = GPIOA, .pin = GPIO_Pin_6, .rcc = RCC_APB2Periph_GPIOA},
 	{.gpio = GPIOA, .pin = GPIO_Pin_7, .rcc = RCC_APB2Periph_GPIOA},
+	{.gpio = GPIOB, .pin = GPIO_Pin_0, .rcc = RCC_APB2Periph_GPIOB},
+	{.gpio = GPIOB, .pin = GPIO_Pin_1, .rcc = RCC_APB2Periph_GPIOB},
+	{.gpio = GPIOC, .pin = GPIO_Pin_0, .rcc = RCC_APB2Periph_GPIOC},
+	{.gpio = GPIOC, .pin = GPIO_Pin_1, .rcc = RCC_APB2Periph_GPIOC},
+	{.gpio = GPIOC, .pin = GPIO_Pin_2, .rcc = RCC_APB2Periph_GPIOC},
+	{.gpio = GPIOC, .pin = GPIO_Pin_3, .rcc = RCC_APB2Periph_GPIOC},
+	{.gpio = GPIOC, .pin = GPIO_Pin_4, .rcc = RCC_APB2Periph_GPIOC},
+	{.gpio = GPIOC, .pin = GPIO_Pin_5, .rcc = RCC_APB2Periph_GPIOC},
 	{.gpio = GPIOA, .pin = GPIO_Pin_8, .rcc = RCC_APB2Periph_GPIOA},
 };
 
