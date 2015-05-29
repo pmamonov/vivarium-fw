@@ -1,4 +1,4 @@
-import glob, time, os, mod_python, numpy, sys
+import glob, time, os, mod_python, numpy, sys, re
 rootdir = "/var/www/logger/"
 wwwroot = "/logger/"
 logger = "/home/pi/logger.py"
@@ -23,21 +23,26 @@ def index(req):
     s+='<form method="get" action="'+wwwroot+"weblogger.py/stop"+ '"> <input type="submit" value="STOP"></form><hr>'
   else:
     s+="<h2>Logger is stopped</h2>"
-    s+='<form method="get" action="'+wwwroot+"weblogger.py/start"+ '"><input type="text" name="period"><input type="submit" value="START"></form><hr>'
+    s += '<form method="get" action="'+wwwroot+"weblogger.py/start"+ '">File name:<input type="text" name="filename"> Period, sec: <input type="text" name="period"><input type="submit" value="START"></form><hr>'
   dat = glob.glob(rootdir+"*.dat")
   dat.sort(reverse=1)
   for f in dat:
     fn = f.split('/')[-1]
-    s+="<a href=%s>%s</a>  <a href='%s' style='color:green'>download</a>  <a href='%s' style='color:red;'>delete</a><hr>"%(wwwroot+"weblogger.py/view?fn=%s"%fn, fn, wwwroot+fn,wwwroot+"weblogger.py/delete?fn=%s"%fn)
+    s+="<a href='%s' style='color:green'>%s</a>  <a href='%s' style='color:red;'>delete</a><hr>"%(wwwroot+fn, fn, wwwroot+"weblogger.py/delete?fn=%s"%fn)
   return s+"</body></html>"
 
-def start(req,period):
+def start(req,filename,period):
   if not is_running():
-    dat = rootdir+"%s.dat"%time.strftime("%Y-%m-%d_%H:%M:%S")
+    filename = re.sub('[^a-zA-Z0-9_.-]', '_', filename.strip())
+    dat = rootdir+"%s.dat" % filename
+    if os.path.isfile(dat):
+      return """<html><body>
+<h2>ERROR: File already exists<hr>
+<a href=%sweblogger.py>BACK</a></h2>
+</body></html>
+""" % wwwroot
     lockf = rootdir+"logger.pid"
     log = rootdir+"logger.log"
-#    cmdlogger = "python "+logger+" -t "+period+" -p "+lockf+" -o "+dat
-#    cmd = "(echo `date` START; echo "+cmdlogger+"; "+cmdlogger+"; echo `date` STOP) >> "+log+" 2>&1 &"
     os.system(reduce(lambda a,b: a+" "+b, (logger,'-t',period,'-p',lockf,'-o',dat,'-l',log,'-d'),'python'))
   time.sleep(1)
   mod_python.util.redirect(req,wwwroot+"weblogger.py")
