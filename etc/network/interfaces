@@ -1,0 +1,14 @@
+auto lo wlan0 eth0
+
+iface lo inet loopback
+
+iface wlan0 inet static
+	address 192.168.128.1
+	netmask 255.255.255.0
+#	up /usr/local/bin/hostapd /etc/hostapd/hostapd.conf &
+
+iface eth0 inet static
+	address 192.168.33.2
+	netmask 255.255.255.0
+	gateway 192.168.33.1
+
