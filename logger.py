@@ -27,6 +27,9 @@ def connect(dev = None, ntry=-1):
       print(sys.exc_info()[1])
 #  while len(sr.read(1))>0: pass
   if status_ok:
+    sr.write("\n")
+    time.sleep(1)
+    sr.flushInput()
     return sr
   else:
     raise NameError, "Device not found"
