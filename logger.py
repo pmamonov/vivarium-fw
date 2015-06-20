@@ -104,6 +104,7 @@ sr = connect(args.dev, ntry=1)
 nchan = 0
 tstart=time.time()
 print("%s Logger started"%timestamp())
+out.write("# LOGGER started @ %s\n#\n" % time.strftime("%Y-%m-%d %H:%M:%S"))
 while True:
   try:
     sr.flushInput()
@@ -130,6 +131,8 @@ while True:
     nchan = len(vals)
     vals_prev = vals
     print("%s Number of channels: %d" % (timestamp(), nchan))
+    out.write("# Number of channels: %d\n" % nchan)
+    out.write(reduce(lambda a, b: a + b, map(lambda i: " channel-%d" % i, range(nchan)), "# time(sec)") + "\n#\n")
 
   vals_dif = []
   for i in xrange(nchan):
@@ -137,7 +140,7 @@ while True:
 
   vals_prev = vals
 
-  out.write("%.2f"%(time.time()-tstart))
+  out.write("%.0f" % (time.time() - tstart))
   out.write(reduce(lambda a, b: a + b, map(lambda v: " %d" % v, vals_dif)) + "\n")
   out.flush()
 
