@@ -127,4 +127,8 @@ while True:
   out.write(reduce(lambda a,b: a+b, map(lambda v: " %s"%v, s.split()))+"\n")
   out.flush()
 #  sys.stdout.flush()
-  time.sleep(args.period)
+
+  tnow = time.time()
+  icycle = int((tnow - tstart) / args.period)
+  tnext = tstart + (icycle + 1) * args.period
+  time.sleep(tnext - tnow)
