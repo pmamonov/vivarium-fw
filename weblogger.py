@@ -1,4 +1,5 @@
 import glob, time, os, mod_python, numpy, sys, re
+import subprocess
 rootdir = "/var/www/logger/"
 wwwroot = "/logger/"
 logger = "/home/pi/logger.py"
@@ -18,22 +19,34 @@ def is_running():
 
 def index(req):
   s="<html><body>"
-  if is_running():
+  s += time.strftime("%Y-%m-%d %H:%M:%S") + "<br>"
+  s += "<br>"
+  s += subprocess.check_output(["df", "-h", "/"]).replace("\n", "<br>")
+  s += "<hr>"
+  logger_pid = is_running()
+  if logger_pid:
     s+="<h2>Logger is running</h2>"
+    s += "<h3>"
+    s+= subprocess.check_output(["sh", "-c", "basename $(ps h -o cmd -p %d | sed 's/^.*-o \\+\\([^ ]\\+\\).*$/\\1/')" % logger_pid])
+    s += "</h3>"
     s+='<form method="get" action="'+wwwroot+"weblogger.py/stop"+ '"> <input type="submit" value="STOP"></form><hr>'
   else:
     s+="<h2>Logger is stopped</h2>"
-    s += '<form method="get" action="'+wwwroot+"weblogger.py/start"+ '">File name:<input type="text" name="filename"> Period, sec: <input type="text" name="period"><input type="submit" value="START"></form><hr>'
+    s += '<form method="get" action="'+wwwroot+"weblogger.py/start"+ '"><input type="submit" value="START"></form><hr>'
   dat = glob.glob(rootdir+"*.dat")
   dat.sort(reverse=1)
   for f in dat:
     fn = f.split('/')[-1]
-    s+="<a href='%s' style='color:green'>%s</a>  <a href='%s' style='color:red;'>delete</a><hr>"%(wwwroot+fn, fn, wwwroot+"weblogger.py/delete?fn=%s"%fn)
+    s+="<a href='%s' style='color:green'>%s</a><hr>"%(wwwroot+fn, fn)
   return s+"</body></html>"
 
-def start(req,filename,period):
+def start(req,filename="", period=60):
   if not is_running():
-    filename = re.sub('[^a-zA-Z0-9_.-]', '_', filename.strip())
+    filename = filename.strip()
+    if len(filename) == 0:
+      filename = time.strftime("%Y-%m-%d_%H:%M:%S")
+    else:
+      filename = re.sub('[^a-zA-Z0-9_.-]', '_', filename)
     dat = rootdir+"%s.dat" % filename
     if os.path.isfile(dat):
       return """<html><body>
@@ -43,7 +56,7 @@ def start(req,filename,period):
 """ % wwwroot
     lockf = rootdir+"logger.pid"
     log = rootdir+"logger.log"
-    os.system(reduce(lambda a,b: a+" "+b, (logger,'-t',period,'-p',lockf,'-o',dat,'-l',log,'-d'),'python'))
+    os.system(reduce(lambda a,b: a+" "+b, (logger,'-t',str(period),'-p',lockf,'-o',dat,'-l',log,'-d'),'python'))
   time.sleep(1)
   mod_python.util.redirect(req,wwwroot+"weblogger.py")
 
