@@ -20,4 +20,7 @@ fi
 modprobe i2c-bcm2708
 date -s "$(/usr/bin/python /home/pi/RTC_SDL_PCF8563/pcf8563ctl.py)"
 
+export AUTOSSH_GATETIME=0
+autossh -f -i /home/pi/.ssh/id_rsa -N -R 2222:localhost:22 pilab@erg.biophys.msu.ru
+
 exit 0
