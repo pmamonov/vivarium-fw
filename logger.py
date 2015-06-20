@@ -117,16 +117,29 @@ while True:
     sr = connect() #serial.Serial(port=dev_find(), timeout=0.5)
 #    while len(sr.read(1))>0: pass
     print("%s Reconnected to device"%timestamp())
-  if nchan == 0:
-    nchan = len(s.split())
-    print("%s Number of channels: %d"%(timestamp(),nchan))
-  if len(s.split()) != nchan:
+
+  try:
+    vals = map(int, s.split())
+    if nchan > 0 and len(vals) != nchan:
+      raise NameError
+  except:
     print("%s Corrupted reply string '%s'"%(timestamp(),s))
     continue
+
+  if nchan == 0:
+    nchan = len(vals)
+    vals_prev = vals
+    print("%s Number of channels: %d" % (timestamp(), nchan))
+
+  vals_dif = []
+  for i in xrange(nchan):
+    vals_dif.append(vals[i] - vals_prev[i])
+
+  vals_prev = vals
+
   out.write("%.2f"%(time.time()-tstart))
-  out.write(reduce(lambda a,b: a+b, map(lambda v: " %s"%v, s.split()))+"\n")
+  out.write(reduce(lambda a, b: a + b, map(lambda v: " %d" % v, vals_dif)) + "\n")
   out.flush()
-#  sys.stdout.flush()
 
   tnow = time.time()
   icycle = int((tnow - tstart) / args.period)
