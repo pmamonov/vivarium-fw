@@ -2,3 +2,6 @@
 	path = firmware
 	url = https://github.com/pmamonov/stm32f103c8t6
 	branch = ratwheel
+[submodule "pcb"]
+	path = pcb
+	url = https://github.com/kuzmin-ilya/ratwheel
