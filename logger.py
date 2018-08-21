@@ -27,7 +27,7 @@ def connect(dev = None, ntry=-1):
       print(sys.exc_info()[1])
 #  while len(sr.read(1))>0: pass
   if status_ok:
-    sr.write("\n")
+    sr.write("echo 0\r")
     time.sleep(1)
     sr.flushInput()
     return sr
@@ -87,7 +87,7 @@ signal.signal(signal.SIGTERM,bye)
 
 sys.stdin = open('/dev/null', 'r')
 sys.stdout = open(args.log, 'a+',0)
-sys.stderr = open(args.log, 'a+',0)
+sys.stderr = sys.stdout
 
 
 lck = open(args.lockf, 'w')
@@ -108,7 +108,7 @@ out.write("# LOGGER started @ %s\n#\n" % time.strftime("%Y-%m-%d %H:%M:%S"))
 while True:
   try:
     sr.flushInput()
-    sr.write("cnt\n")
+    sr.write("cnt\r")
     s = sr.readline()
   except (serial.serialutil.SerialException, serial.termios.error) as err:
     print("%s Error communicating to device: %s"%(timestamp(),str(err)))
